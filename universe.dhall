@@ -2,12 +2,6 @@
 
 -- ∀, λ
 
-let MaybeT : Kind =
-    < SomeT : Type
-    | NoneT
-    >
-
-let MergeRec : Kind = { a : Type, b : Type, m : MaybeT }
 let Universe_ : Kind =
     < U0 : Type
     | U1 : Type
@@ -15,54 +9,90 @@ let Universe_ : Kind =
     | U3 : Type
     | U4 : Type
     | U5 : Type
-    | Merge : MergeRec
     >
-
-
-let qm
-    : Type -> Type -> Universe_
-    : Kind
-    = \(a : Type) -> \(b : Type) -> Universe_.Merge { a, b, m = MaybeT.NoneT }
-let qmc
-    : Type -> Type -> Type -> Universe_
-    : Kind
-    = \(a : Type) -> \(b : Type) -> \(c : Type) -> Universe_.Merge { a, b, m = MaybeT.SomeT c }
 
 
 let Universe : Kind = ∀(X : Type) -> Universe_
 
-let U0 : Universe = \(X : Type) -> Universe_.U0 X
-let U1 : Universe = \(X : Type) -> Universe_.U1 X
-let U2 : Universe = \(X : Type) -> Universe_.U2 X
-let U3 : Universe = \(X : Type) -> Universe_.U3 X
-let U4 : Universe = \(X : Type) -> Universe_.U4 X
-let U5 : Universe = \(X : Type) -> Universe_.U5 X
+let u0 : Universe_ = Universe_.U0 {}
+let u1 : Universe_ = Universe_.U1 {}
+let u2 : Universe_ = Universe_.U2 {}
+let u3 : Universe_ = Universe_.U3 {}
+let u4 : Universe_ = Universe_.U4 {}
+let u5 : Universe_ = Universe_.U5 {}
+
+let U0 : Universe = \(X : Type) -> u0
+let U1 : Universe = \(X : Type) -> u1
+let U2 : Universe = \(X : Type) -> u2
+let U3 : Universe = \(X : Type) -> u3
+let U4 : Universe = \(X : Type) -> u4
+let U5 : Universe = \(X : Type) -> u5
 
 let Universe/upper
     : Universe_ -> Universe_ -> Universe_
     = \(right : Universe_) -> \(left : Universe_) ->
         merge
-            { U0 = \(r : Type) ->
+            { U0 = \(_ : Type) ->
                 merge
-                    { U0 = \(l : Type) -> qm r l
-                    , U1 = \(l : Type) -> qm r l
-                    , U2 = \(l : Type) -> qm r l
-                    , U3 = \(l : Type) -> qm r l
-                    , U4 = \(l : Type) -> qm r l
-                    , U5 = \(l : Type) -> qm r l
-                    , Merge = \(rec : MergeRec) -> qmc rec.a rec.b r
+                    { U0 = \(_ : Type) -> u0
+                    , U1 = \(_ : Type) -> u1
+                    , U2 = \(_ : Type) -> u2
+                    , U3 = \(_ : Type) -> u3
+                    , U4 = \(l : Type) -> u4
+                    , U5 = \(l : Type) -> u5
                     }
                     left
-            , U1 = \(t : Type) -> U0 t
-            , U2 = \(t : Type) -> U0 t
-            , U3 = \(t : Type) -> U0 t
-            , U4 = \(t : Type) -> U0 t
-            , U5 = \(t : Type) -> U0 t
-            , Merge = \(rec : MergeRec) -> qm rec.a rec.b
+            , U1 = \(_ : Type) ->
+                merge
+                    { U0 = \(_ : Type) -> u1
+                    , U1 = \(_ : Type) -> u1
+                    , U2 = \(_ : Type) -> u2
+                    , U3 = \(_ : Type) -> u3
+                    , U4 = \(l : Type) -> u4
+                    , U5 = \(l : Type) -> u5
+                    }
+                    left
+            , U2 = \(_ : Type) ->
+                merge
+                    { U0 = \(_ : Type) -> u2
+                    , U1 = \(_ : Type) -> u2
+                    , U2 = \(_ : Type) -> u2
+                    , U3 = \(_ : Type) -> u3
+                    , U4 = \(l : Type) -> u4
+                    , U5 = \(l : Type) -> u5
+                    }
+                    left
+            , U3 = \(_ : Type) ->
+                merge
+                    { U0 = \(_ : Type) -> u3
+                    , U1 = \(_ : Type) -> u3
+                    , U2 = \(_ : Type) -> u3
+                    , U3 = \(_ : Type) -> u3
+                    , U4 = \(l : Type) -> u4
+                    , U5 = \(l : Type) -> u5
+                    }
+                    left
+            , U4 = \(_ : Type) ->
+                merge
+                    { U0 = \(_ : Type) -> u4
+                    , U1 = \(_ : Type) -> u4
+                    , U2 = \(_ : Type) -> u4
+                    , U3 = \(_ : Type) -> u4
+                    , U4 = \(l : Type) -> u4
+                    , U5 = \(l : Type) -> u5
+                    }
+                    left
+            , U5 = \(_ : Type) ->
+                merge
+                    { U0 = \(_ : Type) -> u5
+                    , U1 = \(_ : Type) -> u5
+                    , U2 = \(_ : Type) -> u5
+                    , U3 = \(_ : Type) -> u5
+                    , U4 = \(l : Type) -> u5
+                    , U5 = \(l : Type) -> u5
+                    }
+                    left
             }
             right
 
-
-let Units : Universe_ = Universe_.U0 {}
-
-in { Universe, Units, U0, U1, U2, U3, U4, Universe/upper }
+in { Universe, U0, U1, U2, U3, U4, Universe/upper }
